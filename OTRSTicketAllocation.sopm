@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>OTRSTicketAllocation</Name>
+    <Version>0.0.0</Version>
+    <Framework Minimum="6.0.26">6.0.x</Framework>
+    <Vendor>OTRS AG</Vendor>
+    <URL>https://otrs.com/</URL>
+    <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
+    <Description Lang="en">Competence level for user.</Description>
+    <Description Lang="ru">Реализация уровней компетентности для пользователей.</Description>
+    <Filelist>
+        <!-- <File Permission="660" Location="Kernel/Config/Files/XML/OTRSCompetenceLevel.xml" />
+        <File Permission="660" Location="Kernel/Language/ru_OTRSCompetenceLevel.pm" />
+        <File Permission="660" Location="Kernel/Modules/AdminCompetenceLevel.pm" />
+        <File Permission="660" Location="Kernel/Output/HTML/Preferences/CompetenceLevel.pm" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/AdminCompetenceLevel.tt" />
+        <File Permission="660" Location="Kernel/Output/HTML/Templates/Standard/PreferencesCompetencie.tt" />
+        <File Permission="660" Location="Kernel/System/CompetenceLevel.pm" />
+        <File Permission="660" Location="scripts/test/CompetenceLevel.t" />
+        <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Admin.CompetenceLevel.js" />
+        <File Permission="660" Location="var/httpd/htdocs/js/Core.Agent.Preferences.js" />
+        <File Permission="660" Location="var/httpd/htdocs/skins/Agent/default/css/Core.Agent.Admin.css" />
+        <File Permission="660" Location="var/httpd/htdocs/skins/Agent/default/css/Core.Agent.Preferences.css" /> -->
+    </Filelist>
+    <DatabaseInstall Type="post">
+        <!-- <TableCreate Name="competence_level">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="SMALLINT"/>
+            <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
+            <Column Name="level" Required="true" Type="SMALLINT"/>
+            <Column Name="valid_id" Required="true" Type="SMALLINT"/>
+            <Column Name="create_time" Required="true" Type="DATE"/>
+            <Column Name="create_by" Required="true" Type="INTEGER"/>
+            <Column Name="change_time" Required="true" Type="DATE"/>
+            <Column Name="change_by" Required="true" Type="INTEGER"/>
+            <Unique Name="competence_level_name">
+                <UniqueColumn Name="name"/>
+            </Unique>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="create_by" Foreign="id"/>
+                <Reference Local="change_by" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate> -->
+    </DatabaseInstall>
+    <DatabaseUpgrade Type="post">
+    </DatabaseUpgrade>
+    <DatabaseUninstall Type="pre">
+        <TableDrop Name="competence_level" />
+    </DatabaseUninstall>
+</otrs_package>

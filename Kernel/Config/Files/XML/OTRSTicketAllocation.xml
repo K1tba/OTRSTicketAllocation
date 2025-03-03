@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="2.0" init="Application">
+
+    <!--
+        Framework
+    -->
+    <Setting Name="Frontend::Module###AdminTicketAllocation" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="GroupRo">
+                        <Array>
+                        </Array>
+                    </Item>
+                    <Item Key="Group">
+                        <Array>
+                            <Item>admin</Item>
+                        </Array>
+                    </Item>
+                    <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
+                    <Item Key="Title" Translatable="1">Ticket Allocation</Item>
+                    <Item Key="NavBarName">Admin</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Loader::Module::AdminTicketAllocation###001-Framework" Required="0" Valid="1">
+        <Description Translatable="1">Loader module registration for the agent interface.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="JavaScript">
+                    <Array>
+                        <Item>Core.Agent.Admin.TicketAllocation.js</Item>
+                    </Array>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminTicketAllocation###002-OTRSTicketAllocation.xml" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::NavigationModule###AdminTicketAllocation" Required="0" Valid="1">
+        <Description Translatable="1">Admin area navigation for the agent interface.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Group">
+                    <Array>
+                        <Item>admin</Item>
+                    </Array>
+                </Item>
+                <Item Key="GroupRo">
+                    <Array>
+                    </Array>
+                </Item>
+                <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
+                <Item Key="Name" Translatable="1">Ticket Allocation</Item>
+                <Item Key="Block">Automation</Item>
+                <Item Key="Description" Translatable="1">Manage allocations tickets in queues.</Item>
+                <Item Key="IconBig">fa-ticket</Item>
+                <Item Key="IconSmall">fa-user</Item>
+            </Hash>
+        </Value>
+    </Setting>
+
+    <Setting Name="Frontend::Module###AgentTicketAllocation" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
+        <Value>
+            <Item ValueType="FrontendRegistration">
+                <Hash>
+                    <Item Key="Group">
+                        <Array>
+                        </Array>
+                    </Item>
+                    <Item Key="GroupRo">
+                        <Array>
+                        </Array>
+                    </Item>
+                    <Item Key="Description" Translatable="1">Ticket Allocation</Item>
+                    <Item Key="Title" Translatable="1">Ticket Allocation</Item>
+                    <Item Key="NavBarName">Other</Item>
+                </Hash>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Loader::Module::AgentTicketAllocation###001-Framework" Required="0" Valid="1">
+        <Description Translatable="1">Loader module registration for the agent interface.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::Loader</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="JavaScript">
+                    <Array>
+                        <Item>Core.Agent.TicketAllocation.js</Item>
+                    </Array>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AgentTicketAllocation###002-OTRSTicketAllocation.xml" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Overview of ticket allocation.</Item>
+                        <Item Key="Name" Translatable="1">Ticket Allocation</Item>
+                        <Item Key="Link">Action=AgentTicketAllocation</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey"></Item>
+                        <Item Key="Prio">290</Item>
+                    </Hash>
+                </Item>
+            </Array>
+        </Value>
+    </Setting>
+
+    <!--
+        Event
+    -->
+    <Setting Name="Ticket::EventModulePost###990-TicketAllocation" Required="0" Valid="1">
+        <Description Translatable="1">Automatically allocation of tickets.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::TicketAllocation</Item>
+                <Item Key="Event">TicketCreate|TicketStateUpdate|TicketQueueUpdate</Item>
+            </Hash>
+        </Value>
+    </Setting>
+
+    <!--
+        Daemon
+    -->
+    <Setting Name="Daemon::SchedulerCronTaskManager::Task###TicketAllocationCheck" Required="0" Valid="1" ConfigLevel="100">
+        <Description Translatable="1">Checks tickets queued for allocation and distributes to members of the queue.</Description>
+        <Navigation>Daemon::SchedulerCronTaskManager::Task</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="TaskName">TicketAllocationCheck</Item>
+                <Item Key="Schedule">*/1 * * * *</Item>
+                <Item Key="Module">Kernel::System::Console::Command::Maint::Ticket::AllocationCheck</Item>
+                <Item Key="Function">Execute</Item>
+                <Item Key="MaximumParallelInstances">1</Item>
+                <Item Key="Params">
+                    <Array>
+                    </Array>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+
+    <!--
+        Core
+    -->
+    <Setting Name="TicketAllocation###GroupNot" Required="1" Valid="1">
+        <Description Translatable="1">Groups of agents not involved in ticket allocation.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Array>
+                <Item>admin</Item>
+            </Array>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###WaitPeriod" Required="1" Valid="1">
+        <Description Translatable="1">Waiting time for a repeat attempt to allocate a ticket (minutes).</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="^[0-9]*$">5</Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###WorkingTimeOnly" Required="1" Valid="1">
+        <Description Translatable="1">Perform ticket allocation only working hours.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">1</Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###CalendarByQueueOnly" Required="1" Valid="1">
+        <Description Translatable="1">Use only the queue calendar, not the SLA calendar.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+
+    <Setting Name="TicketAllocation###Lock" Required="1" Valid="1">
+        <Description Translatable="1">Lock ticket whenever there is a allocation.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">1</Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###StateID" Required="1" Valid="1">
+        <Description Translatable="1">Change ticket status whenever there is a allocation.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="^[0-9]*$"></Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###SkipOverLimit" Required="1" Valid="1">
+        <Description Translatable="1">Skip agent when ticket limit is reached.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###ReAssign" Required="1" Valid="1">
+        <Description Translatable="1">Tickets reallocation.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###NotAutoAssignWhenNewOwnerIsSelected" Required="1" Valid="1">
+        <Description Translatable="1">Not ticket allocation when new owner is selected.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="TicketAllocation###CountInAutoAssignQueueOnly" Required="1" Valid="1">
+        <Description Translatable="1">Count agent tickets only in allocation queue.</Description>
+        <Navigation>TicketAllocation</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+</otrs_config>

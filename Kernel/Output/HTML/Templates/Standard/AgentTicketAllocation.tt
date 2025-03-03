@@ -1,0 +1,212 @@
+# --
+# AgentAutoAssign.tt - provides HTML form for AgentAutoAssign
+# Copyright (C) 2016-2019 Radiant System, http://radiantsystem.com/
+# --
+# $Id: AgentAutoAssign.tt, RS4OTRS_TicketAutoAssign, v 6.0.0 2019-02-14 12:31:12 RS VZh $
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+# --
+
+[% RenderBlockStart("Overview") %]
+<div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
+   <h1 class="InvisibleText">[% Translate("Ticket Allocation Management") | html %]</h1>
+
+    [% BreadcrumbPath = [
+            {
+                Name => Translate('Ticket Allocation Management'),
+                Link => Env("Action"),
+            },
+        ]
+    %]
+
+    [% SWITCH Data.Action %]
+        [% CASE 'Change' %]
+            [% USE EditTitle = String(Translate("Edit Ticket Allocation")) %]
+            [% BreadcrumbPath.push({ Name => EditTitle.append( ': ', Data.Queue ) }) %]
+    [% END %]
+
+    [% INCLUDE "Breadcrumb.tt" Path = BreadcrumbPath Type = "Agent" %]
+
+    <div class="Clear"></div>
+    <div class="SidebarColumn">
+
+[% RenderBlockStart("ActionList") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+                <ul class="ActionList">
+
+[% RenderBlockStart("ActionOverview") %]
+                    <li>
+                        <a href="[% Env("Baselink") %][% IF Data.Action %]Action=[% Env("Action") %];[% END %]" class="CallForAction Fullsize Center">
+                            <span>
+                                <i class="fa fa-caret-left"></i>
+                                [% Translate("Go to overview") | html %]
+                            </span>
+                        </a>
+                    </li>
+[% RenderBlockEnd("ActionOverview") %]
+
+[% RenderBlockStart("ActionReset") %]
+                    <li>
+                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=ResetAction;QueueID=[% Data.QueueID | html %]" class="CallForAction Fullsize Center">
+                            <span>
+                                <i class="fa fa-undo"></i>
+                                [% Translate("Reset all settings excluding") | html %]
+                            </span>
+                        </a>
+                    </li>
+[% RenderBlockEnd("ActionReset") %]
+
+                </ul>
+            </div>
+        </div>
+[% RenderBlockEnd("ActionList") %]
+
+[% RenderBlockStart("FilterQueues") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterQueues">[% Translate("Filter for queues") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterQueues" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterQueues" value="" title="[% Translate("Filter for queues") | html %]">
+            </div>
+        </div>
+[% RenderBlockEnd("FilterQueues") %]
+
+[% RenderBlockStart("FilterUsers") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterUsers">[% Translate("Filter for agents") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterUsers" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterUser" value="" title="[% Translate("Filter for agents") | html %]" />
+            </div>
+        </div>
+[% RenderBlockEnd("FilterUsers") %]
+    </div>
+
+    <div class="ContentColumn">
+
+[% RenderBlockStart("OverviewResult") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("List") | html %]</h2>
+            </div>
+            <div class="Content">
+
+[% RenderBlockStart("Warning") %]
+                <div class="WidgetMessage Top Warning">
+                    <p>[% Translate("Warning! You do not have permissions to access this module.") | html %]</p>
+                </div>
+[% RenderBlockEnd("Warning") %]
+
+                <table class="DataTable" id="Queues">
+                    <thead>
+                        <tr>
+                            <th>[% Translate("Name") | html %]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+[% RenderBlockStart("OverviewResultRowNoDataFoundMsg") %]
+                        <tr>
+                            <td>[% Translate("No data found.") | html %]</td>
+                        </tr>
+[% RenderBlockEnd("OverviewResultRowNoDataFoundMsg") %]
+[% RenderBlockStart("OverviewResultRow") %]
+                        <tr>
+                            <td>
+                                <a class="AsBlock" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Change;QueueID=[% Data.QueueID | uri %]">[% Data.QueueName | html %]</a>
+                            </td>
+                        </tr>
+[% RenderBlockEnd("OverviewResultRow") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="1">[% Translate("No matches found.") | html %]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+[% RenderBlockEnd("OverviewResult") %]
+
+[% RenderBlockStart("OverviewUpdate") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("List") | html %]</h2>
+            </div>
+            <div class="Content">
+                <form id="EntityUpdate" action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
+                    <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+                    <input type="hidden" name="Subaction" value="[% Data.Action | uri %]Action"/>
+                    <input type="hidden" name="QueueID" value="[% Data.QueueID | uri %]"/>
+                    [% IF Data.Action == 'Change' %]
+                        <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
+                    [% END %]
+
+                    <table class="DataTable" id="Users">
+                        <thead>
+                            <tr>
+                                <th class="W10pc Center">
+                                    [% Translate("Exclude") | html %]
+                                </th>
+                                <th>
+                                    [% Translate("Agent") | html %]
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+[% RenderBlockStart("OverviewUpdateRowNoDataFoundMsg") %]
+                            <tr>
+                                <td colspan="2">
+                                    [% Translate("No data found.") | html %]
+                                </td>
+                            </tr>
+[% RenderBlockEnd("OverviewUpdateRowNoDataFoundMsg") %]
+[% RenderBlockStart("OverviewUpdateRow") %]
+                            <tr>
+                                <td class="W10pc Center">
+                                    <label class="switch">
+                                        <input type="checkbox" id="UserID[% Data.ID | html %]" name="Exclude" value="[% Data.ID | html %]" [% Data.Checked %]>
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label for="UserID[% Data.ID | html %]">
+                                        [% Data.Name | html %]
+                                    </label>
+                                </td>
+                            </tr>
+[% RenderBlockEnd("OverviewUpdateRow") %]
+                            <tr class="FilterMessage Hidden">
+                                <td colspan="2">[% Translate("No matches found.") | html %]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="Field SpacingTop">
+                        [% IF Data.Action == 'Change' %]
+                            <button class="CallForAction Primary" id="SubmitAndContinue" type="button" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                            [% Translate("or") | html %]
+                            <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
+                        [% ELSE %]
+                            <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                        [% END %]
+                        [% Translate("or") | html %]
+                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %]"><span>[% Translate("Cancel") | html %]</span></a>
+                    </div>
+                    <div class="Clear"></div>
+
+                </form>
+
+            </div>
+        </div>
+[% RenderBlockEnd("OverviewUpdate") %]
+
+    </div>
+    <div class="Clear"></div>
+</div>
+[% RenderBlockEnd("Overview") %]
